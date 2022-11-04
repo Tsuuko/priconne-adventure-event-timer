@@ -6,6 +6,7 @@ export type CountDownTimerProps = {
   times: dayjs.Dayjs[];
 };
 export const CountDownTimer: React.FC<CountDownTimerProps> = ({ times }) => {
+  const [timesCount, setTimesCount] = useState<number | undefined>();
   const [countDown, setCountDown] = useState<{
     h: string;
     m: string;
@@ -13,10 +14,11 @@ export const CountDownTimer: React.FC<CountDownTimerProps> = ({ times }) => {
   }>();
 
   const calculateTime = useCallback(() => {
+    const nextTimeIndex = times.findIndex((v) => v.diff(new Date()) > 0);
+    nextTimeIndex >= 0 && setTimesCount(nextTimeIndex + 1);
     const nextTime = times.find((v) => v.diff(new Date()) > 0);
 
     if (!nextTime) {
-      setCountDown(undefined);
       return;
     }
 
@@ -33,6 +35,7 @@ export const CountDownTimer: React.FC<CountDownTimerProps> = ({ times }) => {
   }, [times]);
 
   useEffect(() => {
+    calculateTime();
     const interval = setInterval(() => calculateTime(), 1000);
     return () => clearInterval(interval);
   }, [calculateTime]);
@@ -48,11 +51,9 @@ export const CountDownTimer: React.FC<CountDownTimerProps> = ({ times }) => {
       <Text fontSize="lg" fontWeight="semibold"></Text>
       <Text fontSize="2xl" fontWeight="bold">
         <chakra.span fontSize={'md'} mr={1}>
-          次回発生まで
+          {timesCount || '-'}回目発生まで
         </chakra.span>
-        {countDown
-          ? `${String(countDown?.h)}:${countDown?.m}:${countDown?.s}`
-          : '00:00:00'}
+        {`${String(countDown?.h)}:${countDown?.m}:${countDown?.s}`}
       </Text>
     </Box>
   );

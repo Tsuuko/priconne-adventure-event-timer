@@ -48,7 +48,7 @@ const Home: NextPage = () => {
         <Header bgColor={headerColor} />
         <Center>
           {firstSpawnTime && (
-            <CountDownTimer times={spawnData.map((v) => v.time).slice(1)} />
+            <CountDownTimer times={spawnData.map((v) => v.time)} />
           )}
         </Center>
         <Wrap spacing={5} shouldWrapChildren={true} justify="center" px={2}>
