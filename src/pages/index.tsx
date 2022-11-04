@@ -9,35 +9,38 @@ import { RESPAWN_DURATION_HOUR } from '../constant';
 import { usePersistAppStore } from '../store/persistAppStore';
 
 const Home: NextPage = () => {
-  const spawnLabels = ['初回発生時刻', '2回目発生時刻', '3回目発生時刻'];
-
   const [headerColor] = useToken('colors', ['pink.100']);
 
   const firstSpawnTime = usePersistAppStore((v) => v.firstSpawnTime);
   const setFirstSpawnTime = usePersistAppStore((v) => v.setFirstSpawnTime);
 
-  const getSpawnTime = (times: number) =>
-    dayjs(firstSpawnTime).add(RESPAWN_DURATION_HOUR * times, 'h');
+  const getSpawnTime = (times: number) => {
+    if (!firstSpawnTime) {
+      return undefined;
+    }
+    return dayjs(firstSpawnTime).add(RESPAWN_DURATION_HOUR * times, 'h');
+  };
 
   const spawnData: {
     label: string;
-    time: dayjs.Dayjs;
-  }[] = firstSpawnTime
-    ? [
-        {
-          label: '初回発生時刻',
-          time: getSpawnTime(0),
-        },
-        {
-          label: '2回目発生時刻',
-          time: getSpawnTime(1),
-        },
-        {
-          label: '3回目発生時刻',
-          time: getSpawnTime(2),
-        },
-      ]
-    : [];
+    time?: dayjs.Dayjs;
+  }[] = [
+    {
+      label: '初回発生時刻',
+      time: getSpawnTime(0),
+    },
+    {
+      label: '2回目発生時刻',
+      time: getSpawnTime(1),
+    },
+    {
+      label: '3回目発生時刻',
+      time: getSpawnTime(2),
+    },
+  ];
+  const spawnTimes = spawnData
+    .map((v) => v.time)
+    .filter((v): v is dayjs.Dayjs => !!v);
 
   return (
     <Box>
@@ -48,9 +51,7 @@ const Home: NextPage = () => {
       <VStack spacing={6}>
         <Header bgColor={headerColor} />
         <Center>
-          {firstSpawnTime && (
-            <CountDownTimer times={spawnData.map((v) => v.time)} />
-          )}
+          {firstSpawnTime && <CountDownTimer times={spawnTimes} />}
         </Center>
         <Wrap spacing={5} shouldWrapChildren={true} justify="center" px={2}>
           {spawnData.map((v) => (
