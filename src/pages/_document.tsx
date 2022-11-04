@@ -1,4 +1,5 @@
 import NextDocument, { Head, Html, Main, NextScript } from 'next/document';
+import { WEBAPP_URL } from '../constant';
 
 export default class Document extends NextDocument {
   render() {
@@ -30,6 +31,19 @@ export default class Document extends NextDocument {
             color="#000000"
           />
           <meta name="msapplication-TileColor" content="#ffffff" />
+          {/*  */}
+          {/* OGP */}
+          <meta name="twitter:card" content="summary" />
+          <meta property="og:url" content={WEBAPP_URL} />
+          <meta
+            property="og:image"
+            content={`${WEBAPP_URL}/favicons/apple-touch-icon.png`}
+          />
+          <meta property="og:title" content="プリコネアドベンチャータイマー" />
+          <meta
+            property="og:description"
+            content="プリコネのアドベンチャーのイベント発生時刻を記録します。"
+          />
           {/*  */}
         </Head>
         <body>
