@@ -16,27 +16,28 @@ const Home: NextPage = () => {
   const firstSpawnTime = usePersistAppStore((v) => v.firstSpawnTime);
   const setFirstSpawnTime = usePersistAppStore((v) => v.setFirstSpawnTime);
 
+  const getSpawnTime = (times: number) =>
+    dayjs(firstSpawnTime).add(RESPAWN_DURATION_HOUR * times, 'h');
+
   const spawnData: {
     label: string;
     time: dayjs.Dayjs;
-  }[] = [
-    {
-      label: '初回発生時刻',
-      time: dayjs(firstSpawnTime),
-    },
-    {
-      label: '2回目発生時刻',
-      time: dayjs(firstSpawnTime).add(RESPAWN_DURATION_HOUR * 1, 'h'),
-    },
-    {
-      label: '3回目発生時刻',
-      time: dayjs(firstSpawnTime).add(RESPAWN_DURATION_HOUR * 3, 'h'),
-    },
-  ];
-
-  const getSpawnTime = (firstSpawnTime: string, times: number) => {
-    return dayjs(firstSpawnTime).add(RESPAWN_DURATION_HOUR * times, 'h');
-  };
+  }[] = firstSpawnTime
+    ? [
+        {
+          label: '初回発生時刻',
+          time: getSpawnTime(0),
+        },
+        {
+          label: '2回目発生時刻',
+          time: getSpawnTime(1),
+        },
+        {
+          label: '3回目発生時刻',
+          time: getSpawnTime(2),
+        },
+      ]
+    : [];
 
   return (
     <Box>
@@ -52,12 +53,9 @@ const Home: NextPage = () => {
           )}
         </Center>
         <Wrap spacing={5} shouldWrapChildren={true} justify="center" px={2}>
-          {spawnLabels.map((label, i) => {
-            const time = firstSpawnTime
-              ? getSpawnTime(firstSpawnTime, i)
-              : undefined;
-            return <SpawnTime key={label} time={time} label={label} />;
-          })}
+          {spawnData.map((v) => (
+            <SpawnTime key={v.label} time={v.time} label={v.label} />
+          ))}
         </Wrap>
         <Button
           size="lg"
